@@ -54,28 +54,36 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     // MARK: - ARSCNViewDelegate
     
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
+    //when image gets detected, this method will get called
+    //in response node will provide a 3D object to be rendered into the screen
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+        //new node object
         let node = SCNNode()
-     
+        
+        //to check if detected item is an ARImageAnchor
+        if let imageAnchor = anchor as? ARImageAnchor {
+            //if ARImageAnchor detected
+            let plane = SCNPlane(
+                width: imageAnchor.referenceImage.physicalSize.width,
+                height: imageAnchor.referenceImage.physicalSize.height
+            )
+            
+            //to make our plane transparent
+            plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
+            
+            //use plane dimensions to create a planeNode
+            //this is going to be the 3D object that we're going to render just on top of card
+            let planeNode = SCNNode(geometry: plane)
+            
+            //to rotate plane from vertical to horizontal position
+            planeNode.eulerAngles.x = -.pi / 2
+            
+            node.addChildNode(planeNode)
+        }
+        
         return node
     }
-*/
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
-    }
+
 }
+
 
