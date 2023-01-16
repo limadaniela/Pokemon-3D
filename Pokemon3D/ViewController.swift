@@ -22,6 +22,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
+        //to add light to a 3D scene
+        sceneView.autoenablesDefaultLighting = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -79,6 +82,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             planeNode.eulerAngles.x = -.pi / 2
             
             node.addChildNode(planeNode)
+            
+            //to place Eevee 3D model on top of planeNode
+            if let pokeScene = SCNScene(named: "art.scnassets/eevee.scn") {
+                if let pokeNode = pokeScene.rootNode.childNodes.first {
+                    //to rotate image to be placed on the top of the card
+                    pokeNode.eulerAngles.x = .pi / 2
+                    
+                    //to add pokeNode to planeNode
+                    planeNode.addChildNode(pokeNode)
+                }
+            }
         }
         
         return node
