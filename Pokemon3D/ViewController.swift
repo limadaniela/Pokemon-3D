@@ -24,26 +24,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         //to add light to a 3D scene
         sceneView.autoenablesDefaultLighting = true
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        //ARImageTrackingConfiguration as we're looking for a specific image provided
-        let configuration = ARImageTrackingConfiguration()
+        //ARWorldTrackingConfiguration is able to detect planes as well as images.
+        //ARImageTRackingConfiguration in case you have only one image to track
+        let configuration = ARWorldTrackingConfiguration()
         
         //to tell app about the images it should track
+        //If only one image use configuration.trackingImages
         if let imageToTrack = ARReferenceImage.referenceImages(inGroupNamed: "Pokemon Cards", bundle: Bundle.main) {
-            configuration.trackingImages = imageToTrack
+            configuration.detectionImages = imageToTrack
             
             //to tell configuration number of images to track
-            configuration.maximumNumberOfTrackedImages = 1
+            configuration.maximumNumberOfTrackedImages = 2
             
             print("Images Successfully Added")
         }
-        
-
+    
         // Run the view's session
         sceneView.session.run(configuration)
     }
@@ -65,6 +65,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         //to check if detected item is an ARImageAnchor
         if let imageAnchor = anchor as? ARImageAnchor {
+            
             //if ARImageAnchor detected
             let plane = SCNPlane(
                 width: imageAnchor.referenceImage.physicalSize.width,
@@ -83,21 +84,31 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             
             node.addChildNode(planeNode)
             
-            //to place Eevee 3D model on top of planeNode
-            if let pokeScene = SCNScene(named: "art.scnassets/eevee.scn") {
-                if let pokeNode = pokeScene.rootNode.childNodes.first {
-                    //to rotate image to be placed on the top of the card
-                    pokeNode.eulerAngles.x = .pi / 2
-                    
-                    //to add pokeNode to planeNode
-                    planeNode.addChildNode(pokeNode)
+            //to place 3D model on top of planeNode if Eevee detected
+            if imageAnchor.referenceImage.name == "eevee-card" {
+                if let pokeScene = SCNScene(named: "art.scnassets/eevee.scn") {
+                    if let pokeNode = pokeScene.rootNode.childNodes.first {
+                        //to rotate image to be placed on the top of the card
+                        pokeNode.eulerAngles.x = .pi / 2
+                        //to add pokeNode to planeNode
+                        planeNode.addChildNode(pokeNode)
+                    }
+                }
+            }
+            //to place 3D model on top of planeNode if Oddish detected
+            if imageAnchor.referenceImage.name == "oddish-card" {
+                if let pokeScene = SCNScene(named: "art.scnassets/oddish.scn") {
+                    if let pokeNode = pokeScene.rootNode.childNodes.first {
+                        //to rotate image to be placed on the top of the card
+                        pokeNode.eulerAngles.x = .pi / 2
+                        //to add pokeNode to planeNode
+                        planeNode.addChildNode(pokeNode)
+                    }
                 }
             }
         }
-        
         return node
     }
-
 }
 
 
